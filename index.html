@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Exam Tester</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="background"></div>
+    <main class="app">
+      <header class="topbar">
+        <h1>Экзаменационный тест</h1>
+        <div class="topbar-actions">
+          <label class="file-input-label" for="pdf-upload">Загрузить PDF</label>
+          <input id="pdf-upload" type="file" accept="application/pdf" />
+          <button id="theme-toggle" class="ghost-button" type="button">Тема</button>
+        </div>
+      </header>
+
+      <section id="status-card" class="card status-card">
+        <p id="status-text">Загрузка PDF...</p>
+      </section>
+
+      <section id="quiz-card" class="card hidden">
+        <div class="quiz-header">
+          <p id="progress-text">0 / 0</p>
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-bar"></div>
+          </div>
+        </div>
+
+        <h2 id="question-text"></h2>
+        <div id="answers" class="answers"></div>
+        <p id="feedback" class="feedback"></p>
+        <button id="check-btn" class="primary-button hidden" type="button">Проверить</button>
+        <button id="next-btn" class="primary-button hidden" type="button">Далее</button>
+      </section>
+
+      <section id="result-card" class="card hidden">
+        <h2>Тест завершён</h2>
+        <p id="result-correct"></p>
+        <p id="result-percent"></p>
+        <button id="restart-btn" class="primary-button" type="button">Пройти заново</button>
+      </section>
+    </main>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
