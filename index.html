@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Exam Tester</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="bg-dawn">
+    <div class="background"></div>
+    <button id="notes-mini-toggle" class="notes-mini-toggle ghost-button header-tool-btn" type="button">📝 Заметки</button>
+    <aside id="notes-mini-panel" class="notes-mini-panel soft-surface hidden">
+      <div class="notes-mini-head">
+        <strong>Мои заметки</strong>
+        <button id="notes-mini-close" class="ghost-button" type="button">×</button>
+      </div>
+      <textarea
+        id="notes-mini-text"
+        class="notes-mini-text"
+        placeholder="Пиши сюда краткие мысли, формулы, правила..."
+      ></textarea>
+    </aside>
+    <main class="app">
+      <header class="topbar">
+        <h1>Экзаменационный тест</h1>
+        <div class="topbar-right">
+          <span id="stars-badge" class="stars-badge"><img src="./star-icon.png" alt="" /><span id="stars-count">0</span></span>
+          <button id="reset-progress-btn" class="ghost-button header-tool-btn" type="button" title="Сбросить прогресс">↻</button>
+          <button id="menu-open-btn" class="ghost-button menu-open-btn header-tool-btn" type="button" title="Меню">☰</button>
+        </div>
+      </header>
+
+      <section class="card pomodoro-card">
+        <div class="pomodoro-left">
+          <h2>Pomodoro</h2>
+          <p id="pomodoro-phase" class="pomodoro-phase">Фокус</p>
+          <p id="pomodoro-time" class="pomodoro-time">25:00</p>
+          <div class="pomodoro-setup">
+            <label>Фокус (мин): <input id="focus-minutes" type="number" min="1" max="180" value="25" /></label>
+            <label>Перерыв (мин): <input id="break-minutes" type="number" min="1" max="60" value="5" /></label>
+            <button id="pomodoro-apply" class="ghost-button" type="button">Применить</button>
+          </div>
+          <div class="pomodoro-controls">
+            <button id="pomodoro-start" class="primary-button" type="button">Старт</button>
+            <button id="pomodoro-pause" class="ghost-button" type="button">Пауза</button>
+            <button id="pomodoro-reset" class="ghost-button" type="button">Сброс</button>
+          </div>
+          <p class="pomodoro-note">Цикл: 25 минут фокус / 5 минут перерыв</p>
+        </div>
+        <div class="pomodoro-video">
+          <div class="pomodoro-video-picker">
+            <select id="pomodoro-video-select" class="pomodoro-video-select" title="Выбрать видео">
+              <option value="live">A Cup of Pomodoro — Live</option>
+              <option value="czB2OGw_8rY">Creamy Matcha Latte (30/10)</option>
+              <option value="jfKfPfyJRdk">lofi hip hop radio (default)</option>
+              <option value="custom">Своя ссылка…</option>
+            </select>
+            <input id="pomodoro-video-url" class="pomodoro-video-url" type="url" placeholder="https://www.youtube.com/watch?v=..." />
+            <button id="pomodoro-video-apply" class="ghost-button" type="button">Ок</button>
+          </div>
+          <iframe
+            id="pomodoro-video-frame"
+            src="https://www.youtube.com/embed/jfKfPfyJRdk?si=1XQgq1EaWJ1y5HVv"
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
+
+      <section id="status-card" class="card status-card">
+        <p id="status-text">Загрузка PDF...</p>
+      </section>
+
+      <section id="quiz-card" class="card hidden">
+        <div class="quiz-header">
+          <p id="progress-text">0 / 0</p>
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-bar"></div>
+          </div>
+        </div>
+
+        <h2 id="question-text"></h2>
+        <div class="quiz-tools">
+          <button id="favorite-btn" class="ghost-button" type="button">☆ В избранное</button>
+          <button id="favorites-mode-btn" class="ghost-button" type="button">Только избранные: выкл</button>
+          <input id="random-count" type="number" min="1" max="198" value="20" class="random-count-input" />
+          <button id="random-test-btn" class="ghost-button" type="button">Случайный тест</button>
+          <button id="all-test-btn" class="ghost-button" type="button">Все 198</button>
+        </div>
+        <div id="answers" class="answers"></div>
+        <p id="feedback" class="feedback"></p>
+        <button id="explanation-toggle-btn" class="ghost-button explanation-toggle-btn hidden" type="button">
+          Показать пояснение
+        </button>
+        <div id="explanation-text" class="explanation-text"></div>
+        <button id="check-btn" class="primary-button hidden" type="button">Проверить</button>
+        <button id="next-btn" class="primary-button hidden" type="button">Далее</button>
+      </section>
+
+      <section id="result-card" class="card hidden">
+        <h2>Тест завершён</h2>
+        <p id="result-correct"></p>
+        <p id="result-percent"></p>
+        <button id="restart-btn" class="primary-button" type="button">Пройти заново</button>
+      </section>
+    </main>
+
+    <button id="kitty-popup" class="kitty-popup hidden" type="button" title="Поймай меня! +1 звезда">
+      <img src="./star-kitten.png" alt="Котёнок со звездой" />
+    </button>
+    <div id="pdf-viewer-modal" class="pdf-viewer-modal hidden">
+      <div class="pdf-viewer-topbar">
+        <button id="pdf-viewer-close" class="ghost-button" type="button">Закрыть</button>
+      </div>
+      <iframe id="pdf-viewer-frame" title="Просмотр PDF"></iframe>
+    </div>
+
+    <div id="notes-editor-modal" class="pdf-viewer-modal hidden">
+      <div class="pdf-viewer-topbar">
+        <button id="notes-editor-close" class="ghost-button" type="button">Закрыть</button>
+      </div>
+      <div class="card notes-editor-card">
+        <h3 class="notes-editor-title">Редактирование конспекта</h3>
+        <label class="notes-editor-label">
+          Название
+          <input id="notes-editor-name" class="notes-editor-input" type="text" />
+        </label>
+        <label class="notes-editor-label">
+          Теги (через запятую)
+          <input id="notes-editor-tags" class="notes-editor-input" type="text" placeholder="например: семья, санкции" />
+        </label>
+        <div class="notes-editor-actions">
+          <button id="notes-editor-save" class="primary-button" type="button">Сохранить</button>
+          <button id="notes-editor-cancel" class="ghost-button" type="button">Отмена</button>
+        </div>
+      </div>
+    </div>
+    <div id="test-section-modal" class="pdf-viewer-modal hidden">
+      <div class="pdf-viewer-topbar">
+        <button id="test-section-close-btn" class="ghost-button" type="button">Закрыть</button>
+      </div>
+      <section class="card test-section-card test-section-modal-card">
+        <div class="test-section-head">
+          <h2>Раздел теста</h2>
+          <p id="active-section-text" class="active-section-text"></p>
+        </div>
+        <div class="test-section-controls">
+          <label>
+            Предмет
+            <select id="subject-select"></select>
+          </label>
+          <label>
+            Тема
+            <select id="topic-select"></select>
+          </label>
+        </div>
+      </section>
+    </div>
+    <div id="notes-modal" class="pdf-viewer-modal hidden">
+      <div class="pdf-viewer-topbar">
+        <button id="notes-close-btn" class="ghost-button" type="button">Закрыть</button>
+      </div>
+      <section class="card notes-card notes-modal-card">
+        <div class="notes-head">
+          <h2>Конспекты PDF</h2>
+          <input id="notes-search" class="notes-search" type="search" placeholder="Поиск по названию…" />
+          <select id="notes-tag-filter" class="notes-tag-filter">
+            <option value="">Все теги</option>
+          </select>
+          <label class="ghost-button" for="notes-upload">Добавить PDF</label>
+          <input id="notes-upload" type="file" accept="application/pdf" multiple />
+        </div>
+        <div id="notes-list" class="notes-list"></div>
+      </section>
+    </div>
+    <div id="personalization-modal" class="pdf-viewer-modal hidden">
+      <div class="pdf-viewer-topbar">
+        <button id="personalization-close-btn" class="ghost-button" type="button">Закрыть</button>
+      </div>
+      <div class="card personalization-card personalization-modal-card">
+        <div class="personalization-head">
+          <h2>Персонализация</h2>
+        </div>
+        <div class="personalization-controls">
+          <label>
+            Имя
+            <input id="user-name-input" type="text" maxlength="40" placeholder="Например: Анюта ❤️" />
+          </label>
+          <label>
+            Цвет интерфейса
+            <select id="ui-color-select">
+              <option value="dawn">Рассвет — от мяты к пудре</option>
+              <option value="blush">Пудра — тёплый розовый</option>
+              <option value="sea">Морская гладь</option>
+              <option value="mist">Туман — серебристо-серый</option>
+            </select>
+          </label>
+          <label class="avatar-upload-label ghost-button" for="user-avatar-input">Выбрать аватар</label>
+          <input id="user-avatar-input" type="file" accept="image/*" />
+        </div>
+        <div class="personalization-avatar-row">
+          <img id="user-avatar-modal-preview" class="user-avatar-preview" src="./star-kitten.png" alt="Аватар пользователя" />
+          <span id="personalization-name-hint"></span>
+        </div>
+      </div>
+    </div>
+    <div id="menu-overlay" class="menu-overlay hidden" aria-hidden="true"></div>
+    <aside id="menu-drawer" class="menu-drawer soft-surface hidden" aria-label="Меню">
+      <div class="menu-drawer-head">
+        <strong>Меню</strong>
+        <button id="menu-close-btn" class="ghost-button" type="button">×</button>
+      </div>
+      <div class="menu-drawer-body">
+        <button id="personalization-open-btn" class="user-badge" type="button" title="Персонализация">
+          <img id="user-avatar-preview" class="user-avatar-preview" src="./star-kitten.png" alt="Аватар" />
+          <span id="user-name-badge">Анюта ❤️</span>
+        </button>
+        <button id="test-section-open-btn" class="ghost-button" type="button" title="Раздел теста">📚 Раздел</button>
+        <button id="notes-open-btn" class="ghost-button" type="button" title="Конспекты">📎 Конспекты</button>
+        <button id="theme-toggle" class="ghost-button" type="button">Тема</button>
+      </div>
+    </aside>
+    <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+    <div id="fx-layer" class="fx-layer" aria-hidden="true"></div>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
